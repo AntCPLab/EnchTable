@@ -1,31 +1,184 @@
-## README的意义
+**Safety Alignment Transfer Framework**
 
-README 文件通常是项目的第一个入口点。你应该通过 README 明确地告诉大家，为什么他们应该使用你的项目，以及安装和使用的方法。
+EnchTable is a framework designed to transfer safety alignment to fine-tuned downstream models.
 
-如果在仅仅看文档而不看代码的情况下就可以使用你的项目，该文档就完成了。 这个非常重要，因为这将使项目的文档接口与其内部实现分开，只要接口保持不变，就可以自由更改项目的内部结构。 
+---
 
-**文档，而不是代码定义了项目的使用方式。**
+## 🛠️ Preparation
 
-一个规范的README文档能减少用户检索信息的时间。
+You can build the required environment by running:
 
-## 标准 README
+```bash
+pip install -r requirements.txt
+```
 
-一个标准的README文件应当至少包含以下的内容：
+---
 
-- 项目背景：说明创建本项目的背景与动机，创建本项目试图解决的问题 
-- 安装方法：说明如何快速上手使用该项目
-- 使用方法：列出本项目能够提供的功能以及使用这些功能的方法
-- 文档：现阶段antcode鼓励用户使用语雀组织项目文档，在README上应当放入项目的语雀文档链接
+## 🚀 Usage
 
-## 附加内容
+The entire workflow consists of two main stages:
 
-视项目的实际情况，同样也应该包含以下内容：
+1. **Safety Distillation**
+2. **Merge**
 
-- 项目特性：说明本项目相较于其他同类项目所具有的特性
-- 兼容环境：说明本项目能够在什么平台上运行
-- 使用示例：展示一些使用本项目的小demo
-- 主要项目负责人：使用“@”标注出本项目的主要负责人，方便项目的用户沟通
-- 参与贡献的方式：规定好其他用户参与本项目并贡献代码的方式
-- 项目的参与者：列出项目主要的参与人
-- 已知用户：列出已经在生产环境中使用了本项目的全部或部分组件的公司或组织
-- 赞助者：列出为本项目提供赞助的用户
+### 1. Safety Distillation
+For safety distillation, we modify the codebase of **LLaMA Factory** to implement NTK-constrained fine-tuning. This step aims to extract safety vector from surrogate LLM.
+
+> ⚠️ Make sure you have properly configured LLaMA Factory before proceeding.
+
+To run the default distillation configuration, simply execute:
+
+```bash
+bash ./safety_distillation/LLaMA-Factory/train.sh
+```
+
+After training, the harmful surrogate model will be saved into `./safety_distillation/LLaMA-Factory/saves/llama3-8b-beavertail_harmful/attention/sft_ntk_linear_e4`
+
+### 2. Merge
+We implement both baseline merging strategies and our proposed **interference-aware merging** method in `./merge/merge.py`.
+
+To run the default merging configuration, simply execute:
+
+```bash
+bash ./run.sh
+```
+
+This script runs the merging process with default hyperparameters (e.g., $\beta = 0.1$, $\gamma = 0.5$). You can customize these values via command-line arguments or by editing the script directly. The merged model will be saved into `./merge/merged_models/Code-Llama-3-8B_aligned`.
+
+---
+
+## 📊 Evaluation
+
+We evaluate the merged model using multiple benchmarks across different domains:
+
+- **Code generation**: Evaluated using [EvalPlus](https://github.com/evalplus/evalplus)
+- **Math reasoning**: Evaluated using [math-eval-harness](https://github.com/ZubinGou/math-evaluation-harness)
+- **Medical/general safety**: Evaluated using [lm-harness](https://github.com/EleutherAI/lm-evaluation-harness)
+
+> ⚠️ **Before running the evaluations, please install the required evaluation packages for each benchmark.** Below are the installation instructions:
+
+```bash
+pip install --upgrade "evalplus[vllm] @ git+https://github.com/evalplus/evalplus"
+
+git clone https://github.com/ZubinGou/math-evaluation-harness.git
+cd math-evaluation-harness
+pip install -r requirements.txt
+
+git clone --depth 1 https://github.com/EleutherAI/lm-evaluation-harness
+cd lm-evaluation-harness
+pip install -e .
+```
+---
+
+### 🔐 Safety Evaluation
+
+To evaluate the safety of the merged model, follow these steps:
+
+#### Generate responses:
+```bash
+bash eval/scripts/generate_other.sh   # Generates responses for general safety evaluation
+bash eval/scripts/generate_salad.sh   # Generates responses for SALADBench safety evaluation
+```
+
+#### Judge safety:
+```bash
+bash eval/scripts/judge_other.sh      # Judges general safety
+bash eval/scripts/judge_salad.sh      # Judges SALADBench safety
+```
+
+These scripts will output metrics such as Unsafe Rate, which reflect how well the merged model adheres to safety guidelines.
+
+---
+
+### 🧪 Utility Evaluation
+
+To evaluate the utility (task performance) of the merged model:
+
+#### Code generation:
+```bash
+bash eval/scripts/evalplus.sh         # Evaluates code generation capability
+```
+
+#### Math reasoning:
+```bash
+bash eval/math-evaluation-harness/eval.sh         # Evaluates math reasoning capability
+```
+
+#### Medical/general reasoning:
+```bash
+bash eval/scripts/evalharness.sh      # Evaluates reasoning capability on medical tasks
+```
+
+These scripts report standard metrics: accuracy.
+
+---
+
+## 🔍 Robustness Evaluation
+
+To comprehensively assess the safety robustness of models under adversarial prompting, we employ two widely used benchmarks: **SorryBench** and **AISafetyLab**. These tools simulate real-world "jailbreak" attacks, allowing us to evaluate the effectiveness of our safety alignment framework in extreme scenarios.
+
+### SorryBench
+
+#### Usage:
+
+```bash
+cd robustness/sorry-bench
+bash generate_answer.sh  # Generate model responses
+bash judge.sh            # Use built-in judge model to detect jailbreak success
+```
+
+> ⚠️ Note: You need to download the judge model provided by SorryBench and ensure its path is correctly configured.
+
+
+### AISafetyLab
+
+
+#### Installation:
+
+```bash
+git clone https://github.com/thu-coai/AISafetyLab.git
+cd AISafetyLab
+pip install -e .
+```
+
+#### Example Attack Configurations
+
+##### DRA Attack Configuration:
+
+```yaml
+attack_data_path: 'thu-coai/AISafetyLab_Datasets/harmbench_standard'
+target_model_path: "YOUR_PATH"
+target_model_name: "llama3"
+demo_num: 1
+lang: en
+evaluator_type: "pattern"
+evaluator_model_path: "meta-llama/Llama-Guard-3-8B"
+detoxify_model_path: "./detoxify_model/toxic_original-c1212f89.ckpt"
+detoxify_config_path: "./model_bert"
+res_save_path: './results/dra_Code-Llama-3-8B_harmbench_50.jsonl'
+device: "cuda:2"
+iters: 20
+em_t: 0.7
+```
+
+##### ICA Attack Configuration:
+
+```yaml
+attack_data_path: "thu-coai/AISafetyLab_Datasets/harmbench_standard" 
+target_model_path: "ajibawa-2023/Code-Llama-3-8B"
+target_model_name: "llama3" 
+demo_num: 1
+lang: en
+evaluator_type: "pattern" 
+evaluator_path: "meta-llama/Llama-Guard-3-8B"
+res_save_path: "./results/ica_Code-Llama-3-8B_harmbench_1shot_PatternScore.jsonl"
+device: "cuda:0"
+```
+
+#### Running an Attack (Example with DRA):
+
+```bash
+python run_attack.py --config configs/dra.yaml
+```
+
+---
