@@ -1,0 +1,13 @@
+### Note: DO NOT use quantized model or quantization_bit when merging lora adapters
+
+### model
+model_name_or_path: meta-llama/Meta-Llama-3-8B-Instruct
+adapter_name_or_path: /root/jinlin/LLaMA-Factory/saves/llama3-8b-code-e4-290k/lora/sft
+template: llama3
+trust_remote_code: true
+
+### export
+export_dir: /root/jinlin/my_project/models/merged_models/llama3_lora/Code-llama3-8B-lora-sft-290k
+export_size: 5
+export_device: cpu
+export_legacy_format: false
