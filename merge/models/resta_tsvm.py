@@ -4,7 +4,7 @@ import torch
 from models.utils import obtain_delta, calculate_state_dict_norm
 
 
-def resta_tsvm_merge(task_model, taske_pre_model, safety_model, safety_pre_model, learn_mask=False, m0=0., adaptive=False, ada_alpha=0.1):
+def enchtable_merge(task_model, taske_pre_model, safety_model, safety_pre_model, learn_mask=False, m0=0., adaptive=False, ada_alpha=0.1):
     task_vector = obtain_delta(task_model, taske_pre_model)
     safety_vector = obtain_delta(safety_model, safety_pre_model)
 
