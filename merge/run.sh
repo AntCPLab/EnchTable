@@ -20,7 +20,7 @@ save_path=(
     './merged_models/Code-Llama-3-8B_aligned'
 )
 methods=(
-    'resta_tsvm'
+    'enchtable'
 )
 
 length=${#task_model[@]}
