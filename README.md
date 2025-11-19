@@ -1,10 +1,22 @@
-**Safety Alignment Transfer Framework**
 
-EnchTable is a framework designed to transfer safety alignment to fine-tuned downstream models.
+# EnchTable: Unified Safety Alignment Transfer in Fine-tuned Large Language Models
+
+<div align="center">
+
+[![Paper](https://img.shields.io/badge/arXiv-2511.09880-b31b1b.svg)](https://arxiv.org/abs/2511.09880)
+
+</div>
+
+## Overview
+
+EnchTable is a unified framework for transferring safety alignment to fine-tuned large language models without extensive retraining. It combines NTK-based safety vector distillation to extract safety knowledge, and an interference-aware merging strategy to preserve both safety and utility. Evaluated across diverse models and tasks, EnchTable effectively mitigates safety degradation during fine-tuning, maintains high task performance, and shows strong robustness against jailbreak attacks.
+
 
 ---
 
 ## 🛠️ Preparation
+
+> **Model weights (both harmful and realigned) will be released on Hugging Face for easy access and reproducibility.**
 
 You can build the required environment by running:
 
@@ -180,5 +192,27 @@ device: "cuda:0"
 ```bash
 python run_attack.py --config configs/dra.yaml
 ```
+---
+
+## 📎 Citation
+
+If you find EnchTable useful in your research, please cite our paper:
+
+```bibtex
+@article{wu2025enchtable,
+  title={EnchTable: Unified Safety Alignment Transfer in Fine-tuned Large Language Models},
+  author={Wu, Jialin and Li, Kecen and Huang, Zhicong and Li, Xinfeng and Wang, Xiaofeng and Hong, Cheng},
+  journal={arXiv preprint arXiv:2511.09880},
+  year={2025}
+}
+```
 
 ---
+
+## 📬 Contact
+
+For questions, collaboration, or feedback, feel free to reach out:
+
+📧 [jinlin.wjl@antgroup.com](mailto:jinlin.wjl@antgroup.com) or [wjlinzju@gmail.com](wjlinzju@gmail.com)
+
+We welcome contributions and discussions!
