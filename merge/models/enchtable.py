@@ -125,4 +125,4 @@ def compute_interference_learn(vec1, vec2, ratio1=0.5, ratio2=0.5, ite=40, lr=1e
     mask = m
     diff = (m_copy - mask.cpu()).abs()
     print(mask.min().item(), mask.max().item(), mask.mean().item(), diff.max().item(), diff.mean().item())
-    return (vec2 * (m0+mask)).detach().cpu()
+    return (vec2 * (m0 + mask)).detach().cpu()
