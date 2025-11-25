@@ -1,9 +1,9 @@
-
 # EnchTable: Unified Safety Alignment Transfer in Fine-tuned Large Language Models
 
 <div align="center">
 
 [![Paper](https://img.shields.io/badge/arXiv-2511.09880-b31b1b.svg)](https://arxiv.org/abs/2511.09880)
+[![S&P](https://img.shields.io/badge/IEEE%20S%26P-2026-FF8800.svg)](https://www.ieee-security.org/TC/SP2026/)
 
 </div>
 
@@ -11,21 +11,29 @@
 
 EnchTable is a unified framework for transferring safety alignment to fine-tuned large language models without extensive retraining. It combines NTK-based safety vector distillation to extract safety knowledge, and an interference-aware merging strategy to preserve both safety and utility. Evaluated across diverse models and tasks, EnchTable effectively mitigates safety degradation during fine-tuning, maintains high task performance, and shows strong robustness against jailbreak attacks.
 
+---
+
+## Model Zoo
+
+We provide 5 model checkpoints aligned via EnchTable across Bio-Medical and Code domains.
+
+| Domain | Method | Checkpoint |
+| :---: | :---: | :---: |
+| **Bio-Medical** | **Attention** | [![Hugging Face](https://img.shields.io/badge/%F0%9F%A4%97-Bio_Medical_Attention-blue)](https://huggingface.co/linzju/Bio-Medical-Llama-3-8B_EnchTable_Attention) |
+| **Bio-Medical** | **FFN** | [![Hugging Face](https://img.shields.io/badge/%F0%9F%A4%97-Bio_Medical_FFN-blue)](https://huggingface.co/linzju/Bio-Medical-Llama-3-8B_EnchTable_FFN) |
+| **Bio-Medical** | **Hybrid** *(Attn+FFN)* | [![Hugging Face](https://img.shields.io/badge/%F0%9F%A4%97-Bio_Medical_Hybrid-blue)](https://huggingface.co/linzju/Bio-Medical-Llama-3-8B_EnchTable_FFN_Attention) |
+| **Code** | **FFN** | [![Hugging Face](https://img.shields.io/badge/%F0%9F%A4%97-Code_FFN-blue)](https://huggingface.co/linzju/Code-Llama-3-8B_EnchTable_FFN) |
+| **Code** | **Hybrid** *(Attn+FFN)* | [![Hugging Face](https://img.shields.io/badge/%F0%9F%A4%97-Code_Hybrid-blue)](https://huggingface.co/linzju/Code-Llama-3-8B_EnchTable_FFN_Attention) |
 
 ---
 
 ## 🛠️ Preparation
-
-> **Model weights (both harmful and realigned) will be released on Hugging Face for easy access and reproducibility.**
 
 You can build the required environment by running:
 
 ```bash
 pip install -r requirements.txt
 ```
-
----
-
 ## 🚀 Usage
 
 The entire workflow consists of two main stages:
